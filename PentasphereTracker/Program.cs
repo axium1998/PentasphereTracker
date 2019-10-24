@@ -26,12 +26,8 @@ namespace PentasphereTracker {
                     /* Input is in this format:
                      * <Distance> <Angle to axis plane><Axis traveled upon> [<Angle for second axis of travel><Axis traveled upon>]
                      */
-<<<<<<< HEAD
                     var input = Console.ReadLine()
                                        ?.Trim();
-=======
-                    var input = Console.ReadLine();
->>>>>>> 1ab824551aaa2f9e4ca06cdfdb2a8c0497eda40f
                     //REF: 56 30NE 64CA
                     //REF: 56 meters, 30 degrees North of East, 64 degrees Charm of Ana 
                     // If our input was null, try again
