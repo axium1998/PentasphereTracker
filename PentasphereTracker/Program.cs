@@ -16,6 +16,22 @@ namespace PentasphereTracker {
         
         
         static void Main(string[] args) {
+            // If we are provided starting degrees...
+            if (args.Length == 4) {
+                double northSouth = 0, eastWest = 0, anaKata = 0, strangeCharm = 0;
+                try {
+                    if (double.TryParse(args[0], out northSouth))
+                        if (double.TryParse(args[1], out eastWest))
+                            if (double.TryParse(args[2], out anaKata))
+                                if (double.TryParse(args[3], out strangeCharm))
+                                    Console.WriteLine("Successfully extracted variables");
+                } catch(Exception e) {Console.WriteLine($"{e.Message}");}
+
+                _northSouth.SetDegree(northSouth);
+                _eastWest.SetDegree(eastWest);
+                _anaKata.SetDegree(anaKata);
+                _strangeCharm.SetDegree(strangeCharm);
+            }
             // For as long as we need, loop my basic input handler
             var traveling = true;
             while (traveling) {
