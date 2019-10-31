@@ -15,7 +15,7 @@ namespace PentasphereTracker {
         private static PolarCoord _strangeCharm = new PolarCoord(Axis.StrangeCharm);
         
         
-        static void Main(string[] args) {
+        static void MainOld(string[] args) {
             // For as long as we need, loop my basic input handler
             var traveling = true;
             while (traveling) {

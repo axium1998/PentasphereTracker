@@ -6,7 +6,7 @@ namespace PentasphereTracker.Helpers {
 	/// </summary>
 	public struct PolarCoord {
 		// Hold the axis of which this PolarCoord represents
-		public Axis GetAxis { get; }
+		public Axis Axis { get; private set; }
 		// Hold the actual polar coordinate for use
 		public double Degree { get; private set; }
 		// And hold the previous coordinate
@@ -17,7 +17,7 @@ namespace PentasphereTracker.Helpers {
 		/// </summary>
 		/// <param name="axis">The axis of which this polar coordinate exists</param>
 		public PolarCoord(Axis axis) {
-			GetAxis = axis;
+			Axis = axis;
 			OldDegree = 0;
 
 			var random = new Random();
