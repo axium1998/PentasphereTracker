@@ -34,7 +34,7 @@ namespace PentasphereTracker {
                      */
 
                     //REF: 10 45 21NA 60EC
-                    //REF: 56 meters, 30 degrees North of East, 64 degrees Charm of Ana 
+                    //REF: 10 meters, 40 degrees on the plane, 21 degrees North of Ana, 60 degrees East of Charm 
                     // If our input was null, try again
                     var input = Console.ReadLine()
                                        ?.Trim();

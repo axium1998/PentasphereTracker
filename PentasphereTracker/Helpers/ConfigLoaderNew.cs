@@ -4,8 +4,8 @@ using System.IO;
 using System.Threading.Tasks;
 
 namespace PentasphereTracker.Helpers {
-	public static class ConfigLoader {
-		public static void LoadConfig() {
+	public static class ConfigLoaderNew {
+		public static async Task LoadConfig() {
 			var configFolder = new DirectoryInfo(Path.Combine(
 				Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData,
 					Environment.SpecialFolderOption.DoNotVerify), "PentasphereTracker"));
@@ -16,15 +16,15 @@ namespace PentasphereTracker.Helpers {
 			Console.WriteLine($"Config dir {configFolder.FullName} found, loading...");
 
 			var configFiles = new List<FileInfo>(configFolder.EnumerateFiles());
-
 			if (configFiles.Count == 0) {
-				Console.WriteLine("No campaign files exist! Continuing to create a new one...");
-				CreateConfig(configFolder);
+				Console.WriteLine("No campaign files exist! Starting new campaign...");
+				await CreateNewConfig(configFolder);
 			} else {
 				var x = 1;
 				foreach (var config in configFiles) {
 					if (config.Extension == ".dat")
 						Console.WriteLine($"[{x}]: {config.Name}");
+					//TODO log non-compliant config file
 					x++;
 				}
 
@@ -41,7 +41,7 @@ namespace PentasphereTracker.Helpers {
 						}
 
 						if (choice == "C") {
-							CreateConfig(configFolder);
+							await CreateNewConfig(configFolder);
 							break;
 						}
 						if (choice == "Q")
@@ -57,7 +57,7 @@ namespace PentasphereTracker.Helpers {
 						if (choiceInt > configFiles.Count + 1)
 							throw new ArgumentOutOfRangeException();
 						if (choiceInt == configFiles.Count + 1)
-							CreateConfig(configFolder);
+							await CreateNewConfig(configFolder);
 
 						FinishLoad(configFiles[choiceInt-1]);
 						break;
@@ -68,6 +68,43 @@ namespace PentasphereTracker.Helpers {
 			}
 		}
 
+		private static async Task CreateNewConfig(FileSystemInfo configFolder) {
+			try {
+				while (true) {
+					Console.WriteLine("PLease name the campaign.");
+					Console.WriteLine("NOTE: Spaces will be replaced with underscores (_) for filesystem compliance");
+
+					var campaignName = Console.ReadLine()?.Trim();
+					if (campaignName == "") throw new ArgumentException("Name cannot be empty");
+
+					var newConfig = new FileInfo(Path.Combine(configFolder.FullName, campaignName + ".dat"));
+
+					File.Create(newConfig.FullName);
+					PentasphereTracker.ConfigName = newConfig;
+					break;
+				}
+			} catch (ArgumentException e) { Console.WriteLine(e.Message); }
+		}
+
+		public static async Task SaveConfig(FileSystemInfo config) {
+			File.Delete(config.FullName);
+			string[] output = {
+				$"{PentasphereTracker.Radius}",
+				$"{(int)CoordGrid.XAxis}:{(int)CoordGrid.YAxis}",
+				$"{(int)CoordGrid.XShiftedAxis}:{(int)CoordGrid.YShiftedAxis}" +
+				$"{CoordGrid.XShift}:{CoordGrid.YShift}",
+				$"{PentasphereTracker.NorthSouth.Degree}:{PentasphereTracker.EastWest.Degree}:" +
+				$"{PentasphereTracker.AnaKata.Degree}:{PentasphereTracker.StrangeCharm.Degree}"};
+
+			File.Create(config.FullName);
+			using (var writer = new StreamWriter(new FileStream(config.FullName, FileMode.CreateNew))) {
+				foreach (var s in output) {
+					await writer.WriteLineAsync(s);
+				}
+			}
+		}
+		
+		
 		private static void FinishLoad(FileSystemInfo config) {
 			PentasphereTracker.ConfigName = config;
 			
@@ -100,36 +137,6 @@ namespace PentasphereTracker.Helpers {
 			PentasphereTracker.EastWest.SetDegree(deg2);
 			PentasphereTracker.AnaKata.SetDegree(deg3);
 			PentasphereTracker.StrangeCharm.SetDegree(deg4);
-		}
-
-		private static async Task CreateConfig(FileSystemInfo configFolder) {
-			while (true) {
-				try {
-					Console.WriteLine("Please give this campaign a name (whitespace will be replaced with '_')");
-					var newCampaign = Console.ReadLine()?.Replace(" ", "_");
-					if (newCampaign == "") throw new ArgumentException("New campaign name cannot be empty");
-					var newConfig = new FileInfo(Path.Combine(configFolder.FullName, newCampaign + ".dat"));
-					File.Create(newConfig.FullName);
-					PentasphereTracker.ConfigName = newConfig;
-					break;
-				} catch (ArgumentException e) {
-					Console.WriteLine($"{e.Message}");
-				}
-			}
-		}
-
-		public static async Task SaveConfig(FileSystemInfo config) {
-			config.Delete();
-			string[] output = {
-				$"{PentasphereTracker.Radius}",
-				$"{(int)CoordGrid.XAxis}:{(int)CoordGrid.YAxis}",
-				$"{(int)CoordGrid.XShiftedAxis}:{(int)CoordGrid.YShiftedAxis}" +
-				$"{CoordGrid.XShift}:{CoordGrid.YShift}",
-				$"{PentasphereTracker.NorthSouth.Degree}:{PentasphereTracker.EastWest.Degree}:" +
-				$"{PentasphereTracker.AnaKata.Degree}:{PentasphereTracker.StrangeCharm.Degree}"};
-
-			File.Create(config.FullName);
-			await File.WriteAllLinesAsync(config.FullName, output);
 		}
 	}
 }

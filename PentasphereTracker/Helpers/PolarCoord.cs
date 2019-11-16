@@ -31,6 +31,11 @@ namespace PentasphereTracker.Helpers {
 			return this;
 		}
 
+		public PolarCoord SetDegree(double d) {
+			Degree = d;
+			return this;
+		}
+
 		public double GetDiff() {
 			return Degree - OldDegree;
 		}
